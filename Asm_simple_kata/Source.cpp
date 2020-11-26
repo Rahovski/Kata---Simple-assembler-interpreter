@@ -59,6 +59,9 @@ unordered_map<string, int> assembler(const vector<string>& program) {
 		}
 		else {
 			string reg = parse_command(program[i], index);
+			//need to work with
+			//jnz b - 2 (+++)
+			//jnz 5 10 (---)
 			string str_value = parse_command(program[i], index);
 			int value = stoi(str_value);
 			//
