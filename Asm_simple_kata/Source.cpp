@@ -25,7 +25,14 @@ public:
 		com_argument = arg;
 	}
 	void command_execute(unordered_map<string, int>& regs_memory) {
-		getReg(regs_memory, action_register)--;
+		if (isdigit(com_argument[0]) || com_argument[0] == '-') {
+			int value = stoi(com_argument);
+			//regs[reg] = value;
+			getReg(regs_memory, action_register) = value;
+		}
+		else {
+			getReg(regs_memory, action_register) = getReg(regs_memory, com_argument);
+		}
 	}
 };
 
@@ -50,20 +57,34 @@ public:
 };
 
 class jnz_command : public Command {
+private:
+	int jump_register = 0;
+	unsigned int* num_of_command;
 public:
-	jnz_command(string reg, string arg) {
+	jnz_command(string reg, string arg, unsigned int *it) {
 		action_register = reg;
 		com_argument = arg;
+		num_of_command = it;
+		if (isdigit(action_register[0])) {
+			jump_register = stoi(action_register);
+		}
 	}
 	void command_execute(unordered_map<string, int>& regs_memory) {
-		getReg(regs_memory, action_register)--;
+		if (jump_register) {
+			*num_of_command = *num_of_command + stoi(com_argument) - 1;
+			jump_register--;
+		}
+		else if (getReg(regs_memory, action_register)) {
+			*num_of_command = *num_of_command + stoi(com_argument) - 1;
+		}
 	}
 };
 
 unordered_map<string, int> assembler(const vector<string>& program) {
 	unordered_map<string, int> reg_info;
 	vector<Command*> command_stack(program.size());
-	for (unsigned int i = 0; i < program.size(); i++) {
+	unsigned int i = 0;
+	for (i = 0; i < program.size(); i++) {
 		vector<string> com_parts = split(program[i]);
 		if (com_parts[0] == "mov") {
 			command_stack[i] = new mov_command(com_parts[1], com_parts[2]);
@@ -75,8 +96,11 @@ unordered_map<string, int> assembler(const vector<string>& program) {
 			command_stack[i] = new dec_command(com_parts[1]);
 		}
 		else if (com_parts[0] == "jnz") {
-			command_stack[i] = new jnz_command(com_parts[1], com_parts[2]);
+			command_stack[i] = new jnz_command(com_parts[1], com_parts[2], &i);
 		}
+	}
+	for (i = 0; i < command_stack.size(); i++) {
+		command_stack[i]->command_execute(reg_info);
 	}
 	//free memory from object
 	for (unsigned int i = 0; i < command_stack.size(); i++) {
