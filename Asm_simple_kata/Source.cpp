@@ -149,8 +149,4 @@ inc d
 mov a d 
 jnz 5 10
 mov c a 
-
-
-equal to [ [unsupported type], [unsupported type], [unsupported type] ]
-Actual: [ [unsupported type], [unsupported type], [unsupported type], [unsupported type] ]
 */
