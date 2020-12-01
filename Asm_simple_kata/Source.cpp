@@ -74,8 +74,10 @@ public:
 			*num_of_command = *num_of_command + stoi(com_argument) - 1;
 			jump_register--;
 		}
-		else if (getReg(regs_memory, action_register)) {
-			*num_of_command = *num_of_command + stoi(com_argument) - 1;
+		else if (!isdigit(action_register[0])) {
+			if (getReg(regs_memory, action_register)) {
+				*num_of_command = *num_of_command + stoi(com_argument) - 1;
+			}
 		}
 	}
 };
